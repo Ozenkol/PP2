@@ -95,3 +95,28 @@ print(txt.expandtabs(10))
 
 print()
 
+txt = "Hello, welcome to my world."
+x = txt.find("welcome")
+print(x)
+
+print()
+
+txt = "Hello, welcome to my world."
+x = txt.find("e")
+print(x)
+
+print()
+
+txt = "Hello, welcome to my world."
+x = txt.find("e", 5, 10)
+print(x)
+
+print()
+
+txt = "Hello, welcome to my world."
+print(txt.find("q"))
+print(txt.index("q"))
+
+print()
+
+
