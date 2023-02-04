@@ -90,5 +90,31 @@ def list_above_5_5(list):
             res.append(x)
     return res
 
-print(list_above_5_5(movies))
+
+def return_category(list, category_name):
+    res = []
+    for x in list:
+        if x.get("category") == category_name:
+            res.append(x)
+    return res
+
+
+def return_average_mark(movies):
+    sum_score = 0
+    count = 0
+    for film in movies:
+        sum_score+=film.get("imdb")
+        count = count + 1
+    return sum_score/count
+
+
+def return_average_mark_of_category(movies, category):
+    category_movies = return_category(movies, category)
+    return return_average_mark(category_movies)
+
+#print(list_above_5_5(movies))
+#print(return_category(movies, "Comedy"))
+#print(f"{return_average_mark(movies):.3f}")
+#print(return_average_mark_of_category(movies, "Romance"))
+
 

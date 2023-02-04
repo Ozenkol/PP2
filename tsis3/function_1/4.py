@@ -18,4 +18,4 @@ def filter_prime(list):
 
 mylist = list(map(int, input().split()))
 
-print(my_func(mylist))
+print(filter_prime(mylist))
