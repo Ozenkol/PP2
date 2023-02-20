@@ -1,2 +1,9 @@
+def square_generator(limit):
+    i = 1
+    while i**2 <= limit:
+        yield i**2
+        i += 1
+
+
 N = int(input())
-print(*([i**2 for i in range(1, N+1)]), sep = ", ")
+print(*list(square_generator(N)), sep=', ')
