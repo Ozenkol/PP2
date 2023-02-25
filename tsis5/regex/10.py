@@ -1,6 +1,10 @@
 import re
 
-with open('raw.txt', 'r', encoding='utf8') as file:
-    data = file.read()
+def repl(match):
+    return match[1]+'_'+match[2].lower()
 
-pattern = '[A-Z]\w+[A-Z]'
+text = input()
+
+print(re.sub(r"([a-z])([A-Z])", repl, text))
+
+

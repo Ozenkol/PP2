@@ -1,8 +1,9 @@
 import re
 
-with open('raw.txt', 'r', encoding='utf8') as file:
-    data = file.read()
+def repl(match):
+    return match[1]+" "+match[2]
 
-pattern = '[a-zа-я]+-[a-zа-я]+'
-for word in re.finditer(pattern, data):
-    print("Word: ", word[0])
+
+text = input()
+
+print(re.sub(r'([A-Z]\w+)([A-Z]\w+)', repl, text))
