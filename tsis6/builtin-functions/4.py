@@ -4,7 +4,7 @@ import time as t
 
 def square_with_delay(num, time):
     t.sleep(time/1000)
-    print(m.sqrt(num))
+    return m.sqrt(num)
 
 
 num = int(input())
