@@ -1,12 +1,13 @@
 import os
 
 
-def existence(path):
-    try:
-        os.path.exists(path)
-        return True
-    except:
-        return False
+def existence(path): 
+     return os.path.exists(path)
+        
+        
+ 
+        
+       
 
 
 def readability(path):
