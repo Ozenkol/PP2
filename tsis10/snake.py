@@ -1,5 +1,5 @@
 import time
-
+import title
 import pygame
 import random
 import level_module
@@ -8,9 +8,10 @@ import snakedatabase
 pygame.init()
 
 # system_variables
-font = pygame.font.SysFont("Comicsans", 20)
 marker = True
 start_tick = pygame.time.get_ticks()
+pygame.mixer.music.load("src/main_menu.mp3")
+pygame.mixer.music.play()
 width = 500
 height = 500
 score = 0
@@ -19,18 +20,6 @@ N = 3
 M = 1
 deadline = pygame.time.Clock()
 clock = pygame.time.Clock()
-pygame.mixer.music.load("src/snake_theme.mp3")
-pygame.mixer.music.play(-1)
-
-
-def your_score(score):
-    your_score = font.render("Your score "+str(score), True, (1, 1, 1))
-    surface.blit(your_score, (width - your_score.get_rect().right, 0))
-
-
-def your_level(level):
-    your_level = font.render("Your level "+str(level), True, (1, 1, 1))
-    surface.blit(your_level, (width - your_level.get_rect().right, 20))
 
 
 class rect_sprite(pygame.sprite.Sprite):
@@ -57,9 +46,7 @@ class Player(pygame.sprite.Sprite):
         self.unit_num = 0
         self.x_head = width // 2
         self.y_head = height // 2
-        self.head = pygame.rect.Rect((self.x_head, self.y_head, 10, 10))
         self.dir = 0
-        self.numbers_of_units = 0
         self.x = width // 2
         self.y = height // 2
         self.rect = pygame.rect.Rect((self.x, self.y, 10, 10))
@@ -131,8 +118,12 @@ class Player(pygame.sprite.Sprite):
 
 Level = 1
 speed = 1
+marker_for_music = True
 main_menu = level_module.Main_menu(None)
 save_button = level_module.save_button()
+my_score = title.your_score(score)
+my_level = title.your_level(Level)
+save_title = title.save_title()
 my_snake = Player()
 point = Point()
 all_sprites = pygame.sprite.Group()
@@ -140,12 +131,10 @@ all_sprites.add(point)
 all_sprites.add(my_snake)
 points = pygame.sprite.Group()
 points.add(point)
-wall_sprite = pygame.sprite.Group()
 Levels = level_module.Levels(Level, width, height)
+wall_sprite = Levels.wall_sprite()
 units_sprite = pygame.sprite.Group()
-for rect in Levels.return_level().rect_list:
-    rect_s = rect_sprite(rect)
-    wall_sprite.add(rect_s)
+
 
 surface = pygame.display.set_mode((500, 500))
 main_menu.surface = surface
@@ -163,25 +152,27 @@ while not done:
         if main_menu.active:
             main_menu.update(event)
             main_menu.draw()
+    if not main_menu.active and marker_for_music:
+        pygame.mixer.music.stop()
+        pygame.mixer.music.load("src/snake_theme.mp3")
+        pygame.mixer.music.play()
+        marker_for_music = False
     if not main_menu.active:
         current_tick = pygame.time.get_ticks()
         seconds = (current_tick - start_tick)/1000
         surface.fill((255, 255, 255))
-        your_score(score)
-        your_level(level)
-
         Levels.return_level().draw(surface)
         if score // N > 1 and score > 0 and marker:
             for entity in wall_sprite:
                 entity.kill()
             Level = Level + 1
-            speed = speed + 1
+            Levels.Level = Level
+            speed = speed + 0.25
             my_snake.speed = speed
             for rect in Levels.return_level().rect_list:
                 rect_s = rect_sprite(rect)
                 wall_sprite.add(rect_s)
             marker = False
-            level = level + 1
             N = N + 3
         if seconds / 5 > M:
             point.kill()
@@ -238,10 +229,14 @@ while not done:
             done = True
         if save_button.button.clicked and main_menu.id is not None:
             snakedatabase.insert_scores(main_menu.id, score, level, speed)
-            #print(main_menu.id, score, level, speed)
             print(snakedatabase.get_scores_by_id(main_menu.id))
             done = True
         save_button.draw(surface)
+        my_score.update(score)
+        my_level.update(Level)
+        my_score.title.draw(surface)
+        my_level.title.draw(surface)
+        save_title.title.draw(surface)
         save_button.update(event_list)
         pygame.display.update()
         clock.tick(60)

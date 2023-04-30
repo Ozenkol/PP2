@@ -1,10 +1,21 @@
 import pygame
 import random
 import snakedatabase
+import title
+
 
 pygame.init()
 clock = pygame.time.Clock()
 FONT = pygame.font.Font(None, 32)
+background = pygame.image.load("src/bg.jpg")
+pygame.transform.scale(background, (500, 500))
+enter_username = title.enter_username()
+
+
+class rectangle_sprite(pygame.sprite.Sprite):
+    def __init__(self, rectangle):
+        super().__init__()
+        self.rect = rectangle
 
 
 class Level_creator(pygame.sprite.Sprite):
@@ -27,20 +38,20 @@ class Levels():
     def __init__(self, Level, width, height):
         self.Level = Level
         self.Level_1 = Level_creator()
-        self.Level_1.rectangles_adder(0, 0, random.randint(0, width), 5)
-        self.Level_1.rectangles_adder(0, 0, random.randint(0, height), 5)
+        self.Level_1.rectangles_adder(0, 0, 150, 5)
+        self.Level_1.rectangles_adder(220, 220, 5, 150)
         self.Level_2 = Level_creator()
-        self.Level_1.rectangles_adder(50, 0, random.randint(0, width), 5)
-        self.Level_1.rectangles_adder(0, 50, random.randint(0, height), 5)
+        self.Level_2.rectangles_adder(50, 0, 100, 5)
+        self.Level_2.rectangles_adder(0, 50, 5, 100)
         self.Level_3 = Level_creator()
-        self.Level_1.rectangles_adder(100, 0, random.randint(0, width), 5)
-        self.Level_1.rectangles_adder(0, 100, random.randint(0, height), 5)
+        self.Level_3.rectangles_adder(100, 0, 50, 5)
+        self.Level_3.rectangles_adder(0, 100, 5, 50)
         self.Level_4 = Level_creator()
-        self.Level_1.rectangles_adder(20, 0, random.randint(0, width), 5)
-        self.Level_1.rectangles_adder(20, 0, random.randint(0, height), 5)
+        self.Level_4.rectangles_adder(20, 0, 150, 5)
+        self.Level_4.rectangles_adder(20, 0, 25, 5)
         self.Level_5 = Level_creator()
-        self.Level_1.rectangles_adder(10, 0, random.randint(0, width), 5)
-        self.Level_1.rectangles_adder(0, 10, random.randint(0, height), 5)
+        self.Level_5.rectangles_adder(10, 0, 120, 5)
+        self.Level_5.rectangles_adder(0, 10, 5, 150)
 
     def return_level(self):
         if self.Level == 1:
@@ -56,11 +67,18 @@ class Levels():
         else:
             pass
 
+    def wall_sprite(self):
+        wall_sprite = pygame.sprite.Group()
+        for rect in self.return_level().rect_list:
+            rect_sprite = rectangle_sprite(rect)
+            wall_sprite.add(rect_sprite)
+        return wall_sprite
+
 
 class InputBox:
     def __init__(self, x, y, w, h, text=''):
         self.rect = pygame.Rect(x, y, w, h)
-        self.color = (255, 255, 0)
+        self.color = (255, 0, 0)
         self.text = text
         self.enter_text = None
         self.id = None
@@ -75,7 +93,7 @@ class InputBox:
                 self.active = not self.active
             else:
                 self.active = False
-            self.color = (122, 222, 2) if self.active else (233, 0, 0)
+            self.color = (255, 0, 0) if self.active else (128, 0, 0)
         if event.type == pygame.KEYDOWN:
             if self.active:
                 if event.key == pygame.K_RETURN:
@@ -107,30 +125,31 @@ class Main_menu(pygame.sprite.Sprite):
     def __init__(self, surface):
         self.active = True
         self.id = None
+        self.valid_username = None
         self.surface = surface
-        self.input_box = InputBox(200, 200, 150, 50)
+        self.input_box = InputBox(150, 150, 50, 50)
 
     def update(self, event):
         self.input_box.handle_event(event)
-            #print(self.input_box.text, self.input_box.enter_text)
         self.input_box.update()
         if self.input_box.enter_text is not None:
             if snakedatabase.is_username_exist(self.input_box.enter_text):
-                id = snakedatabase.get_id(self.input_box.enter_text)
-                print(snakedatabase.get_scores_by_id(id))
+                self.id = snakedatabase.get_id(self.input_box.enter_text)
+                self.valid_username = True
+                print(snakedatabase.get_scores_by_id(self.id))
             else:
-                print("Created new user: ")
+                self.valid_username = False
+                print("Created new user: " + self.input_box.enter_text)
                 snakedatabase.insert_username(self.input_box.enter_text)
-                self.id =  snakedatabase.get_id(self.input_box.enter_text)
+                self.id = snakedatabase.get_id(self.input_box.enter_text)
                 self.active = False
             self.input_box.enter_text = None
 
     def draw(self):
-        self.surface.fill((15, 15, 15))
+        self.surface.blit(background, (0, 0))
         self.input_box.draw(self.surface)
+        enter_username.draw(self.surface)
         pygame.display.flip()
-
-
 
 
 class Button_creator(pygame.sprite.Sprite):

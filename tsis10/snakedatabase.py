@@ -37,7 +37,7 @@ def connect():
 
 
 def create_tables():
-    commands = """
+    command_1 = """
     CREATE TABLE users_score (
         user_id INTEGER PRIMARY KEY,
         score INTEGER NOT NULL,
@@ -48,12 +48,19 @@ def create_tables():
             ON UPDATE CASCADE ON DELETE CASCADE
     )
     """
+    command_2 = """
+        CREATE TABLE users (
+        user_id SERIAL PRIMARY KEY,
+        user_name CHARACTER VARYING(30)
+    )
+    """
     conn = None
     try:
         params = config()
         conn = psycopg2.connect(**params)
         cur = conn.cursor()
-        cur.execute(commands)
+        cur.execute(command_2)
+        cur.execute(command_1)
         cur.close()
         conn.commit()
     except(Exception, psycopg2.DatabaseError) as error:
@@ -180,4 +187,4 @@ def insert_username(username):
             conn.close()
 
 
-insert_scores(2, 100, 100, 100)
+create_tables()
